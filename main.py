@@ -1,7 +1,4 @@
-import base64
 import json
-
-import cv2
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -67,16 +64,8 @@ async def process_scan(request: ScanRequest):
     """Process a scanned image and return detected information"""
     logger.info("Processing scan request...")
     try:
-        # Extract image data
-        frame_data = request.frame
-        image_data = base64.b64decode(frame_data.split(',')[1])  # Removing the "data:image/jpeg;base64," part
-
-        # Convert the byte data into an OpenCV image
-        image_array = np.frombuffer(image_data, dtype=np.uint8)
-        image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-
         # Simulate detection
-        detection_result = detect_objects(image)
+        detection_result = detect_objects(request.frame)
 
         # Return the detection result
         return ScanResponse(

@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import base64
 
-def detect_objects(image):
+def detect_objects(frame):
     
     # if image is not None:
     #     # Process the image (e.g., show it)
@@ -13,6 +13,16 @@ def detect_objects(image):
     #     cv2.destroyAllWindows()
     # else:
     #     return {"error": "Failed to decode image."}
+    
+    frame_data = frame
+    image_data = base64.b64decode(frame_data.split(',')[1])  # Removing the "data:image/jpeg;base64," part
+
+    # Convert the byte data into an OpenCV image
+    image_array = np.frombuffer(image_data, dtype=np.uint8)
+    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    
+    if image is None:
+        return {"error": "Failed to decode image."}
     
     """
     Simulate object detection with constant/pseudo-random output
