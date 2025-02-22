@@ -1,3 +1,7 @@
+import base64
+import json
+
+import cv2
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -5,6 +9,7 @@ from typing import Optional
 import numpy as np
 from datetime import datetime
 import logging
+from scanner import detect_objects
 import uvicorn
 
 # Configure logging
@@ -60,11 +65,32 @@ async def health_check():
 @app.post("/scan", response_model=ScanResponse)
 async def process_scan(request: ScanRequest):
     """Process a scanned image and return detected information"""
-    return ScanResponse(
-        success=True,
-        data="This is a placeholder response.",
-        error=None
-    )
+    logger.info("Processing scan request...")
+    try:
+        # Extract image data
+        frame_data = request.frame
+        image_data = base64.b64decode(frame_data.split(',')[1])  # Removing the "data:image/jpeg;base64," part
+
+        # Convert the byte data into an OpenCV image
+        image_array = np.frombuffer(image_data, dtype=np.uint8)
+        image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+        # Simulate detection
+        detection_result = detect_objects(image)
+
+        # Return the detection result
+        return ScanResponse(
+            success=True,
+            data=json.dumps(detection_result),
+            error=None
+        )
+    except Exception as e:
+        logger.error(f"Error processing scan request: {str(e)}")
+        return ScanResponse(
+            success=False,
+            data=None,
+            error="Failed to process scan request."
+        )
 
 if __name__ == "__main__":
     uvicorn.run(

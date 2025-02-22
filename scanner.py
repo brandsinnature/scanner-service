@@ -36,9 +36,7 @@ def detect_objects(image):
     
     # Create result dictionary
     result = {
-        "success": True,
         "detections": products,
-        "error": None
     }
 
     return result
