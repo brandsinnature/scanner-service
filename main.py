@@ -69,7 +69,7 @@ async def process_scan(request: ScanRequest):
         
         response = ScanResponse(
             success=True,
-            data=json.dumps(detection_result.detections),
+            data=json.dumps(detection_result),
             error=None
         )
         
