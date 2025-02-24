@@ -70,7 +70,7 @@ async def process_scan(request: ScanRequest):
         # Return the detection result
         return ScanResponse(
             success=True,
-            data=json.dumps(detection_result),
+            data=detection_result,
             error=None
         )
     except Exception as e:
