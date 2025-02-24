@@ -66,13 +66,17 @@ async def process_scan(request: ScanRequest):
     try:
         # Simulate detection
         detection_result = detect_objects(request.frame)
-
-        # Return the detection result
-        return ScanResponse(
+        
+        response = ScanResponse(
             success=True,
-            data=detection_result,
+            data=json.dumps(detection_result),
             error=None
         )
+        
+        logger.info("Scan request processed successfully.")
+
+        # Return the detection result
+        return response
     except Exception as e:
         logger.error(f"Error processing scan request: {str(e)}")
         return ScanResponse(
