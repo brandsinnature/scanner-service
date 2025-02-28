@@ -1,73 +1,34 @@
 import json
-import sys
-import numpy as np
-import cv2
-import base64
+import openai_func
 
-def detect_objects(frame):
+def detect_objects(frame, client):
+    products_jsonl = openai_func.detect_object_openai(client, frame)
     
-    # if image is not None:
-    #     # Process the image (e.g., show it)
-    #     cv2.imshow("Received Image", image)
-    #     cv2.waitKey(0)
-    #     cv2.destroyAllWindows()
-    # else:
-    #     return {"error": "Failed to decode image."}
+    products = json.loads(products_jsonl)
     
-    frame_data = frame
-    image_data = base64.b64decode(frame_data.split(',')[1])  # Removing the "data:image/jpeg;base64," part
-
-    # Convert the byte data into an OpenCV image
-    image_array = np.frombuffer(image_data, dtype=np.uint8)
-    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-    
-    if image is None:
-        return {"error": "Failed to decode image."}
-    
-    """
-    Simulate object detection with constant/pseudo-random output
-    """
-    # Predefined list of sample products
-    products = [
-        {
-            "id": "coca_cola_1",
-            "class": "coca_cola_can",
-            "product_name": "Aqua Refine 500ml",
-            "confidence": 0.95,
-            "product_code": "5449000214911",
-            "bounding_box": {
-                "x": 100,
-                "y": 150,
-                "width": 200,
-                "height": 300
-            }
-        }
-    ]
-    
-    # Create result dictionary
     result = {
         "detections": products,
     }
 
     return result
 
-def main():
-    frame_data = input()
+# def main():
+#     frame_data = input()
     
-    image_data = base64.b64decode(frame_data.split(',')[1])  # Removing the "data:image/jpeg;base64," part
+#     image_data = base64.b64decode(frame_data.split(',')[1])  # Removing the "data:image/jpeg;base64," part
 
-    # Convert the byte data into an OpenCV image
-    image_array = np.frombuffer(image_data, dtype=np.uint8)
-    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+#     # Convert the byte data into an OpenCV image
+#     image_array = np.frombuffer(image_data, dtype=np.uint8)
+#     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
     
-    # Simulate detection
-    detection_result = detect_objects(image)
+#     # Simulate detection
+#     detection_result = detect_objects(image)
 
-    # Print JSON output (for API/subprocess consumption)
-    print(json.dumps(detection_result))
+#     # Print JSON output (for API/subprocess consumption)
+#     print(json.dumps(detection_result))
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
     
 # import cv2
 # import torch

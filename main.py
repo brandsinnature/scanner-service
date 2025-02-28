@@ -8,6 +8,8 @@ from datetime import datetime
 import logging
 from scanner import detect_objects
 import uvicorn
+import openai_func
+import os
 
 # Configure logging
 logging.basicConfig(
@@ -45,6 +47,9 @@ class ScanResponse(BaseModel):
     success: bool
     data: Optional[str] = None
     error: Optional[str] = None
+    
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = openai_func.setup_openai_client(OPENAI_API_KEY)
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
@@ -65,7 +70,7 @@ async def process_scan(request: ScanRequest):
     logger.info("Processing scan request...")
     try:
         # Simulate detection
-        detection_result = detect_objects(request.frame)
+        detection_result = detect_objects(request.frame, client)
         
         response = ScanResponse(
             success=True,
@@ -73,7 +78,7 @@ async def process_scan(request: ScanRequest):
             error=None
         )
         
-        logger.info("Scan request processed successfully.")
+        logger.info("Scan request processed successfully.", detection_result)
 
         # Return the detection result
         return response
@@ -86,6 +91,7 @@ async def process_scan(request: ScanRequest):
         )
 
 if __name__ == "__main__":
+    
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
