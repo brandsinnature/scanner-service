@@ -4,7 +4,9 @@ import openai_func
 def detect_objects(frame, client):
     products_jsonl = openai_func.detect_object_openai(client, frame)
     
-    products = json.loads(products_jsonl)
+    # products = json.loads(products_jsonl)
+    
+    products = [json.loads(line) for line in products_jsonl.splitlines()]
     
     result = {
         "detections": products,
