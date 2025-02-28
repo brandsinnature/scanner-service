@@ -1,5 +1,6 @@
 import openai
 import logging
+import json
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -13,17 +14,42 @@ def detect_object_openai(client, image_data):
     try:
         response = client.chat.completions.create(
             model="gpt-4-turbo",
-            messages=[
-                {"role": "system", "content": "You need to detect the object in the image and provide me just a list of json objects which would have the following fields. 'detections' which is a list of objects detected. Each object should have 'id', 'product_name', 'product_company', 'material', 'confidence', fields. Nothing else should be written by you except the json list in the form of a string."},
-                {"role": "user", "content": [
-                    {"type": "image_url", "image_url": {"url": image_data}}
-                ]}
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are a computer program that can identify objects in images."
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Please identify the objects in the image below. Ignore humans. "
+                                    "Respond **only** with a JSON list, nothing else. "
+                                    "Each object should have the following fields: 'brand', 'name', 'material', and 'confidence'. "
+                                    "Use `null` for unknown fields.\n\n"
+                                    "Example valid response:\n"
+                                    "[\n"
+                                    "    {\"brand\": \"apple\", \"name\": \"iphone\", \"material\": \"glass\", \"confidence\": 0.9},\n"
+                                    "    {\"brand\": \"samsung\", \"name\": \"galaxy\", \"material\": null, \"confidence\": 0.8}\n"
+                                    "]"
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": image_data}
+                        }
+                    ]
+                }
             ]
+
         )
+        print(response.choices[0].message.content)
         logger.info(f"Prompt given successfully", response.choices[0].message.content)
-        return response.choices[0].message.content
+        content = response.choices[0].message.content
+        result = json.loads(content)
+        return result
     except Exception as e:
-        print(f"Error when prompt was given: {e}")
+        logger.error(f"Error when prompt was given: {e}")
         return None
     
     
