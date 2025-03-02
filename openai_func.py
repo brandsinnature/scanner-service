@@ -27,7 +27,7 @@ def detect_object_openai(client, image_data):
                             "text": "Please identify the objects in the image below. Ignore humans. "
                                     "Respond **only** with a JSON list, nothing else. "
                                     "Each object should have the following fields: 'brand', 'name', 'material', and 'confidence'. "
-                                    "Use `null` for unknown fields.\n\n"
+                                    "Use 'Not Identified' for unknown fields.\n\n"
                                     "Example valid response:\n"
                                     "[\n"
                                     "    {\"brand\": \"apple\", \"name\": \"iphone\", \"material\": \"glass\", \"confidence\": 0.9},\n"
