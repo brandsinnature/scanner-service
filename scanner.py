@@ -3,8 +3,9 @@ import cv2
 import re
 import numpy as np
 import base64
-import pyzbar.pyzbar as pyzbar
+import zxing
 import logging
+import tempfile
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,6 +18,34 @@ def detect_objects(frame, client):
     }
 
     return result
+
+def extract_upi_details(qr_code_data):
+    """Extract UPI ID and Name from QR code data."""
+    upi_match = re.search(r'pa=([\w.@]+)', qr_code_data)
+    name_match = re.search(r'pn=([^&]+)', qr_code_data)
+
+    upi_id = upi_match.group(1) if upi_match else "Not found"
+    name = name_match.group(1) if name_match else "Not found"
+
+    return upi_id, name
+
+def scan_qr_from_image(image):
+    """Scan QR code from an image object (PIL Image) and extract UPI details."""
+    # Save image temporarily
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as temp_file:
+        image.save(temp_file.name)  # Save PIL image
+        reader = zxing.BarCodeReader()
+        barcode = reader.decode(temp_file.name)
+
+    if barcode and barcode.raw:
+        upi_id, name = extract_upi_details(barcode.raw)
+        
+        return {
+            "upi_id": upi_id,
+            "name": name
+        }
+    else:
+        return {"upi_id": None, "name": None}
 
 def get_upi(frame):
         
@@ -42,24 +71,4 @@ def get_upi(frame):
                 img_array = np.asarray(bytearray(resp.read()), dtype=np.uint8)
                 frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         
-        decoded_objects = pyzbar.decode(frame)
-        
-        for obj in decoded_objects:
-            # Get the data from the QR code
-            logger.info(f"Decoded data: {obj.data}")
-            data = obj.data.decode('utf-8')
-            
-            # Check if it's a UPI QR code
-            if data.startswith("upi://"):
-                # Extract the UPI ID using regex
-                # Extract UPI ID
-                upi_match = re.search(r"pa=([^&]+)", data)
-                # Extract name (usually provided in the 'pn' parameter)
-                name_match = re.search(r"pn=([^&]+)", data)
-                return {
-                    "upi_id": upi_match.group(1),
-                    "name": name_match.group(1) if name_match else None
-                }
-        
-        # Return None if no UPI ID found
-        return {"upi_id": None, "name": None}
+        return scan_qr_from_image(frame)

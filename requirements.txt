@@ -6,3 +6,4 @@ pydantic==2.10.6
 uvicorn==0.34.0
 openai==1.65.1
 pyzbar==0.1.9
+zxing==1.0.3
