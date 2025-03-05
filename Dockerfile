@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt install python-zbar
+RUN apt install zbar-tools
 
 # Install reddis
 RUN pip install --no-cache-dir redis
