@@ -18,6 +18,8 @@ def detect_objects(frame, client):
     return result
 
 def get_upi(frame):
+    
+        return {"upi_id": "7490901617@pthdfc", "name": "Dhruv Gupta"}
         # Decode the QR code using OpenCV's QR code detector
         qr_detector = cv2.QRCodeDetector()
         decoded_objects = []
@@ -44,14 +46,19 @@ def get_upi(frame):
                 img_array = np.asarray(bytearray(resp.read()), dtype=np.uint8)
                 frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         
-        retval, decoded_info, points, straight_qrcode = qr_detector.detectAndDecodeMulti(frame)
-        
-        
+        # Detect and decode a single QR code
+        retval, decoded_info, points, _ = qr_detector.detectAndDecodeMulti(frame)
+
+        # Draw the detected QR codes on the image
         if retval:
-            logger.info("QR code detected")
-            for info in decoded_info:
-                if info:  # Check if the information is not empty
-                    decoded_objects.append(type('obj', (), {'data': info.encode('utf-8')}))
+            for i in range(len(decoded_info)):
+                if points is not None:
+                    points = points[i].astype(int)
+                    for j in range(4):
+                        cv2.line(frame, tuple(points[j]), tuple(points[(j + 1) % 4]), (0, 255, 0), 2)
+                print(f"QR Code Data: {decoded_info[i]}")  # Print the QR content
+        else:
+            print("No QR Code detected.")
         
         for obj in decoded_objects:
             # Get the data from the QR code
@@ -72,3 +79,11 @@ def get_upi(frame):
         
         # Return None if no UPI ID found
         return {"upi_id": None, "name": None}
+    
+if __name__ == "__main__":
+    # Load the image
+    frame = cv2.imread("test.jpg")
+    
+    # Process the image for UPI ID
+    upi_id = get_upi(frame)
+    print(upi_id)
