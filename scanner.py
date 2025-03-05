@@ -1,7 +1,5 @@
-import json
 import openai_func
 import cv2
-from pyzbar.pyzbar import decode
 import re
 
 def detect_objects(frame, client):
@@ -14,8 +12,16 @@ def detect_objects(frame, client):
     return result
 
 def get_upi(frame):
-        # Decode the QR code
-        decoded_objects = decode(frame)
+        # Decode the QR code using OpenCV's QR code detector
+        qr_detector = cv2.QRCodeDetector()
+        decoded_objects = []
+        
+        retval, decoded_info, points, straight_qrcode = qr_detector.detectAndDecodeMulti(frame)
+        
+        if retval:
+            for info in decoded_info:
+                if info:  # Check if the information is not empty
+                    decoded_objects.append(type('obj', (), {'data': info.encode('utf-8')}))
         
         for obj in decoded_objects:
             # Get the data from the QR code
@@ -34,4 +40,4 @@ def get_upi(frame):
                 }
         
         # Return None if no UPI ID found
-        return {"upi_id": None}
+        return {"upi_id": None, "name": None}
