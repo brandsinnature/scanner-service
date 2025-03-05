@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 from datetime import datetime
 import logging
-from scanner import detect_objects
+from scanner import detect_objects, get_upi
 import uvicorn
 import openai_func
 import os
@@ -105,16 +105,16 @@ async def process_scan(request: ScanRequest):
             error=None
         )
         
-        logger.info("Scan request processed successfully.", upi_id)
+        logger.info("Deposit-Scan request processed successfully.", upi_id)
 
         # Return the detection result
         return response
     except Exception as e:
-        logger.error(f"Error processing scan request: {str(e)}")
+        logger.error(f"Error processing deposit-scan request: {str(e)}")
         return ScanResponse(
             success=False,
             data=None,
-            error="Failed to process scan request."
+            error="Failed to process deposit-scan request."
         )
 
 if __name__ == "__main__":
