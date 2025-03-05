@@ -9,12 +9,10 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
+RUN sudo apt install libzbar0
+
 # Install reddis
 RUN pip install --no-cache-dir redis
-
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-RUN brew install zbar
 
 # Copy requirements and install dependencies
 COPY requirements.txt .
