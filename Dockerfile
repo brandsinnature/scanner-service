@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
 # Install reddis
 RUN pip install --no-cache-dir redis
 
+RUN brew install zbar
+
 # Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
