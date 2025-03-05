@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
 # Install reddis
 RUN pip install --no-cache-dir redis
 
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
 RUN brew install zbar
 
 # Copy requirements and install dependencies
