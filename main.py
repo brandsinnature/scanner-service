@@ -46,6 +46,7 @@ class HealthResponse(BaseModel):
 class ScanResponse(BaseModel):
     success: bool
     data: Optional[str] = None
+    deposit_data: Optional[str] = None
     error: Optional[str] = None
     
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -79,6 +80,32 @@ async def process_scan(request: ScanRequest):
         )
         
         logger.info("Scan request processed successfully.", detection_result)
+
+        # Return the detection result
+        return response
+    except Exception as e:
+        logger.error(f"Error processing scan request: {str(e)}")
+        return ScanResponse(
+            success=False,
+            data=None,
+            error="Failed to process scan request."
+        )
+        
+@app.post("/scan-deposit", response_model=ScanResponse)
+async def process_scan(request: ScanRequest):
+    """Process a scanned image and return detected information"""
+    logger.info("Processing scan-deposit request...")
+    try:
+        # Simulate detection
+        upi_id = get_upi(request.frame, client)
+        
+        response = ScanResponse(
+            success=True,
+            deposit_data=json.dumps(upi_id),
+            error=None
+        )
+        
+        logger.info("Scan request processed successfully.", upi_id)
 
         # Return the detection result
         return response
