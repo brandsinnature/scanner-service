@@ -97,7 +97,7 @@ async def process_scan(request: ScanRequest):
     logger.info("Processing scan-deposit request...")
     try:
         # Simulate detection
-        upi_id = get_upi(request.frame, client)
+        upi_id = get_upi(request.frame)
         
         response = ScanResponse(
             success=True,
