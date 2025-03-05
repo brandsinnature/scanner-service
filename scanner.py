@@ -34,6 +34,7 @@ def get_upi(frame):
             img_array = np.frombuffer(img_bytes, dtype=np.uint8)
             # Decode the image
             frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+            logger.info(frame)
         elif frame.startswith('http://') or frame.startswith('https://'):
             # Download image from URL
             import urllib.request
