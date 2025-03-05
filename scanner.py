@@ -3,6 +3,10 @@ import cv2
 import re
 import numpy as np
 import base64
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def detect_objects(frame, client):
     products = openai_func.detect_object_openai(client, frame)
@@ -20,7 +24,9 @@ def get_upi(frame):
         
         # Check if frame is a base64 string or URL
         if isinstance(frame, str):
+            logger.info("Processing frame as a string...")
             if frame.startswith('data:image'):
+                logger.info("Processing frame as a data URI...")
                 # Extract base64 data from data URI
                 # Find the base64 part after the comma
                 base64_data = frame.split(',')[1]
@@ -40,13 +46,16 @@ def get_upi(frame):
         
         retval, decoded_info, points, straight_qrcode = qr_detector.detectAndDecodeMulti(frame)
         
+        
         if retval:
+            logger.info("QR code detected")
             for info in decoded_info:
                 if info:  # Check if the information is not empty
                     decoded_objects.append(type('obj', (), {'data': info.encode('utf-8')}))
         
         for obj in decoded_objects:
             # Get the data from the QR code
+            logger.info(f"Decoded data: {obj.data}")
             data = obj.data.decode('utf-8')
             
             # Check if it's a UPI QR code

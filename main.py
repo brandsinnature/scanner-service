@@ -99,6 +99,8 @@ async def process_scan(request: ScanRequest):
         # Simulate detection
         upi_id = get_upi(request.frame)
         
+        logger.info(upi_id)
+        
         response = ScanResponse(
             success=True,
             deposit_data=json.dumps(upi_id),
