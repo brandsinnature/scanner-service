@@ -72,5 +72,5 @@ def get_upi(frame):
                 img_array = np.asarray(bytearray(resp.read()), dtype=np.uint8)
                 frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         
-        return scan_qr_from_image(PIL.image.fromarray(frame))
+        return scan_qr_from_image(PIL.Image.fromarray(frame))
     
